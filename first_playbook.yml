@@ -1,0 +1,15 @@
+---
+- name: My First Network Automation Practice
+  hosts: local
+  tasks:
+    - name: Print a welcome message
+      ansible.builtin.debug:
+        msg: "Ansible is running smoothly on Termux!"
+
+    - name: Create a mock router config file
+      ansible.builtin.copy:
+        dest: /data/data/com.termux/files/home/ansible-lab/router_config.txt
+        content: |
+          hostname Core-Router-01
+          interface GigabitEthernet0/1
+           ip address 192.168.1.1 255.255.255.0

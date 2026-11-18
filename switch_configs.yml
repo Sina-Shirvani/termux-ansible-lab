@@ -1,0 +1,45 @@
+---
+- name: Generate Switch Configurations with Variables and Loops
+  hosts: local
+  vars:
+    base_dir: /data/data/com.termux/files/home/ansible-lab/configs
+    switches:
+      - hostname: Access-Switch-01
+        mgmt_ip: 10.10.1.11
+      - hostname: Access-Switch-02
+        mgmt_ip: 10.10.1.12
+      - hostname: Core-Switch-01
+        mgmt_ip: 10.10.1.1
+    vlans:
+      - id: 10
+        name: USERS
+      - id: 20
+        name: VOICE
+      - id: 99
+        name: MANAGEMENT
+
+  tasks:
+    - name: Create a directory for generated configs
+      ansible.builtin.file:
+        path: "{{ base_dir }}"
+        state: directory
+
+    - name: Generate a base config file for each switch
+      ansible.builtin.copy:
+        dest: "{{ base_dir }}/{{ item.hostname }}.cfg"
+        content: |
+          hostname {{ item.hostname }}
+          !
+          interface Vlan99
+           ip address {{ item.mgmt_ip }} 255.255.255.0
+          !
+      loop: "{{ switches }}"
+
+    - name: Append VLANs to each switch config
+      ansible.builtin.blockinfile:
+        path: "{{ base_dir }}/{{ item[0].hostname }}.cfg"
+        marker: "! {mark} ANSIBLE MANAGED VLAN {{ item[1].id }}"
+        block: |
+          vlan {{ item[1].id }}
+           name {{ item[1].name }}
+      loop: "{{ switches | product(vlans) | list }}"
