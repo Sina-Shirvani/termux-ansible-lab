@@ -1,0 +1,24 @@
+- name: Generate a configuration for multiple VLANs
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    vlans:
+      - id: 10
+        name: USERS
+      - id: 20
+        name: SERVERS
+      - id: 30
+        name: MANAGEMENT
+
+  tasks:
+    - name: Write all VLANs to one file
+      ansible.builtin.copy:
+        dest: "{{ playbook_dir }}/multi-vlan.cfg"
+        content: |
+          {% for vlan in vlans %}
+          vlan {{ vlan.id }}
+           name {{ vlan.name }}
+          {% endfor %}
+

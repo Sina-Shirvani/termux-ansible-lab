@@ -1,0 +1,12 @@
+- name: Generate a VLAN configuration
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Write the VLAN configuration file
+      ansible.builtin.copy:
+        dest: "{{ playbook_dir }}/vlan-lab.cfg"
+        content: |
+          vlan 20
+           name IT
