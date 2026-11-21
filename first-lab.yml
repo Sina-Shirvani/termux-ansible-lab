@@ -1,0 +1,9 @@
+- name: Run the first local lab
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Confirm the playbook works
+      ansible.builtin.debug:
+        msg: "My first Ansible playbook works."
